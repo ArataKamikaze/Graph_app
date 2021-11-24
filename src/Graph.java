@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.sql.Array;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Graph {
 
@@ -343,12 +343,12 @@ public class Graph {
     //Algoritmo construido com base em pseudocódigo encontrado em: https://www.youtube.com/watch?v=_lHSawdgXpI
 
     public String dijkstra(String startingVertex){
-        Vertex             v0       = getVertexByName(startingVertex);
-        ArrayList<Vertex>  vertices = (ArrayList<Vertex>) vertexList.clone();
-        ArrayList<Vertex>  border   = new ArrayList<Vertex>();
-        ArrayList<Integer> cost     = new ArrayList<Integer>();
-        ArrayList<Vertex>  parentList   = new ArrayList<Vertex>();
-        Vertex             u        = v0;
+        Vertex             v0         = getVertexByName(startingVertex);
+        ArrayList<Vertex>  vertices   = (ArrayList<Vertex>) vertexList.clone();
+        ArrayList<Vertex>  border     = new ArrayList<Vertex>();
+        ArrayList<Integer> cost       = new ArrayList<Integer>();
+        ArrayList<Vertex>  parentList = new ArrayList<Vertex>();
+        Vertex             u          = v0;
 
 
         for (int i = 0; i < vertices.size(); i++) {
@@ -404,4 +404,49 @@ public class Graph {
         }
         return output;
     }
+
+    public String prim(){
+        ArrayList<Object> P = new ArrayList<Object>();
+        int               i = 0;
+        for (int j = 0; j < vertexList.size(); j++) {
+            P.add(i, "-1");
+        }
+        P.set(i,0);
+        do {
+            Vertex vi = vertexList.get(i);
+            Vertex j = null;
+            int minweight = Integer.MAX_VALUE;
+            for (Edge e: vi.getConnectedEdges()) {
+                if (minweight> e.getWeight()){
+                    Vertex vj;
+                    if (e.getSrc() == vi){
+                        vj = e.getTgt();
+                    }
+                    else{
+                        vj = e.getSrc();
+                    }
+                    if (P.get(vertexList.indexOf(vj)) == "-1"){
+                        j = vj;
+                        minweight = e.getWeight();
+                    }
+                }
+            }
+            if (j != null){
+                P.set(vertexList.indexOf(j), vi);
+            }
+            i++;
+        }while (P.contains("-1"));
+
+        String output = String.format("Prim:\n%5s%5s%5s\n", "v1", "wgt", "v2");
+        for (int j = 1; j < vertexList.size(); j++) {
+            Vertex p = (Vertex) P.get(j);
+            String temp = vertexList.get(j).getConnection(p).getName()+"\n";
+            output+= String.format("%5s%5s%5s", temp.split("-")[0], temp.split("-")[1], temp.split("-")[2]);
+        }
+        return output;
+    }
+    public boolean verifyEqualsHashSet(List<Object> list) {
+        return new HashSet<Object>(list).size() <= 1;
+    }
+
 }
